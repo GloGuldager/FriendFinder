@@ -1,0 +1,87 @@
+<h1>Friends</h1>
+
+<ul>
+  {{#each friends}}
+    <li>
+      <p>
+        {{this.id}}. {{this.name}}
+
+        <button data-friendid="{{this.id}}" class="delfriend">Delete</button>
+      </p>
+    </li>
+  {{/each}}
+</ul>
+
+<h2>Add a Friend to Watch</h2>
+<form id="addfriend" class="button-size">
+	<textarea type="text" name="name"></textarea>
+	<button type="submit">Save Friend!</button>
+</form>
+
+<h2>Update a Friend</h2>
+<form id="updatefriend" class="button-size">
+  <input type="text" name="id" placeholder="id">
+	<textarea type="text" name="name" placeholder="what do you want to update this friend name to?"></textarea>
+	<button type="submit">Update Friend!</button>
+</form>
+
+<script type="text/javascript">
+  $(".delfriend").on("click", function(event) {
+    var id = $(this).data("friendid");
+
+    // Send the DELETE request.
+    $.ajax("/friends/" + id, {
+      type: "DELETE"
+    }).then(
+      function() {
+        console.log("deleted id ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $("#addfriend").on("submit", function(event) {
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    var newFriend = {
+      friend: $("#addfriend [name=name]").val().trim()
+    };
+
+    // Send the POST request.
+    $.ajax("/friends", {
+      type: "POST",
+      data: newFriend
+    }).then(
+      function() {
+        console.log("added new friend");
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $("#updatefriend").on("submit", function(event) {
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    var id = $("[name=id]").val().trim();
+
+    var updatedFriend = {
+      friend: $("#updatefriend [name=name]").val().trim()
+    };
+
+    // Send the PUT request.
+    $.ajax("/friends/" + id, {
+      type: "PUT",
+      data: updatedFriend
+    }).then(
+      function() {
+        console.log("updated id ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+</script>
